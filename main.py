@@ -27,10 +27,11 @@ def hello():
     return """
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="/static/my.js"></script>
 </head>
 <body onload="myOnLoad();">
-<textarea id="my_input" rows="25" cols="80">
+<textarea id="my_input">
 </textarea>
 <br/>
 <button type="button" onclick="doFormat('readable');">readable</button>

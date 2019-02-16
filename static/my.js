@@ -1,34 +1,22 @@
 var lastFormat = 'readable';
 
-function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+function myOnLoad() {
+    document.getElementById("my_input").value = Cookies.get('my_input');
+    document.getElementById("my_input").style.width = Cookies.get("my_input_width");
+    document.getElementById("my_input").style.height = Cookies.get("my_input_height");
+    document.getElementById("my_input").focus();
 }
 
-function myOnLoad() {
-    document.getElementById("my_input").value = getCookie("my_input");
-//    document.getElementById("my_input").rows = getCookie("my_input_rows");
-//    document.getElementById("my_input").cols = getCookie("my_input_cols");
-    document.getElementById("my_input").focus();
+function save_cookies() {
+    Cookies.set('my_input', document.getElementById("my_input").value, { expires: 365 });
+    Cookies.set('my_input_width', document.getElementById("my_input").style.width, { expires: 365 });
+    Cookies.set('my_input_height', document.getElementById("my_input").style.height, { expires: 365 });
 }
 
 function doFormat(f = 'readable') {
     document.getElementById("my_input").value = formatNestedCall(document.getElementById("my_input").value, f);
-    document.cookie = "my_input=" + encodeURIComponent(document.getElementById("my_input").value);
-    document.cookie = "my_input_rows=" + document.getElementById("my_input").rows;
-    document.cookie = "my_input_cols=" + document.getElementById("my_input").cols;
     document.getElementById("my_input").focus();
+    save_cookies();
 }
 
 function formatNestedCall(str = '', f = 'readable') {
