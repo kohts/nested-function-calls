@@ -26,7 +26,9 @@ def hello():
     """Return a friendly HTTP greeting."""
     return """
 <head>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="/static/my.js"></script>
 </head>
@@ -35,7 +37,12 @@ def hello():
 </textarea>
 <br/>
 <button type="button" onclick="doFormat('readable');">readable</button>
-<button type="button" onclick="doFormat('grafana');">grafana</button>
+<button type="button" onclick="doFormat('oneliner');">one-liner</button>
+(use ctrl-enter to toggle between modes)
+<form id="search_and_replace">
+  search for: <input type="text" style="z-index:10000" id="search_field"><br/>
+  replace with: <input type="text" style="z-index:10000" id="replace_field"><br/>
+  </form>
 </body>
 """
 

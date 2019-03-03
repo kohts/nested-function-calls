@@ -1,10 +1,91 @@
 var lastFormat = 'readable';
 
+function doReplace(aText, aReplaceWhat, aReplaceWith) {
+    var re = new RegExp(aReplaceWhat, 'g');
+    return aText.replace(re, aReplaceWith);
+}
+
 function myOnLoad() {
+    $(function() {
+        $("#search_and_replace").dialog({
+            autoOpen : false,
+            modal : true,
+            show : "blind",
+            hide : "blind",
+            buttons: [
+                {
+                    text: 'Replace',
+                    id: 'btnReplace',
+                    click: function () {
+                        var reply = window.confirm('Replace ' +
+                            document.getElementById("search_field").value +
+                            ' with ' +
+                            document.getElementById("replace_field").value +
+                            '?'
+                            );
+
+                        if (reply) {
+                            Cookies.set('search_field', document.getElementById("search_field").value, { expires: 365 });
+                            Cookies.set('replace_field', document.getElementById("replace_field").value, { expires: 365 });
+                        
+                            document.getElementById("my_input").value = doReplace(
+                                document.getElementById("my_input").value,
+                                document.getElementById("search_field").value,
+                                document.getElementById("replace_field").value
+                                );
+                            $(this).dialog('close');
+                        }
+                    }
+                },
+                {
+                    text: 'Cancel',
+                    id: 'btnCancel',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }            
+            ]
+        });
+    });
+
+    $(function () {
+        $(document).on("keydown", "#search_field", function(e) {
+            if ((e.keyCode == 10 || e.keyCode == 13)) {
+                document.getElementById("replace_field").focus();
+            }
+        });
+        $(document).on("keydown", "#replace_field", function(e) {
+            if ((e.keyCode == 10 || e.keyCode == 13)) {
+                document.getElementById("btnReplace").click();
+            }
+        });
+
+        $(document).on("keydown", "#my_input", function(e) {
+            if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+                if (lastFormat == 'readable') {
+                    lastFormat = 'oneliner';
+                }
+                else {
+                    lastFormat = 'readable';
+                }
+
+                doFormat(lastFormat);
+            }
+            
+            if (e.ctrlKey && String.fromCharCode(e.which).toLowerCase() == 'h') {
+                $("#search_and_replace").dialog('open');
+                return false;
+            }
+        });
+    });
+
     document.getElementById("my_input").value = Cookies.get('my_input');
     document.getElementById("my_input").style.width = Cookies.get("my_input_width");
     document.getElementById("my_input").style.height = Cookies.get("my_input_height");
     document.getElementById("my_input").focus();
+
+    document.getElementById("search_field").value = Cookies.get('search_field');
+    document.getElementById("replace_field").value = Cookies.get('replace_field');
 }
 
 function save_cookies() {
@@ -30,6 +111,9 @@ function formatNestedCall(str = '', f = 'readable') {
   var in_protected_string = "";
 
   for (var i = 0; i < str.length; i++) {
+
+      // start/end of quoted string
+      //
       if (str.charAt(i) == "'" || str.charAt(i) == '"') {
           if (in_protected_string != "") {
               if (in_protected_string == str.charAt(i)) {
@@ -43,13 +127,15 @@ function formatNestedCall(str = '', f = 'readable') {
           continue;
       }
 
+      // ignore brackets inside of strings
+      //
       if (in_protected_string != "") {
           buffer = buffer + str.charAt(i);
           continue;
       }
       
       
-      if (str.charAt(i) == "(") {
+      if (str.charAt(i) == "(" || str.charAt(i) == "{") {
           out_str = out_str + str.charAt(i);
 
           nest_level = nest_level + 1;
@@ -58,7 +144,7 @@ function formatNestedCall(str = '', f = 'readable') {
               buffer = "\n" + " ".repeat(nest_level * tab_length);
           }
       }
-      else if (str.charAt(i) == ")") {
+      else if (str.charAt(i) == ")" || str.charAt(i) == "}") {
           if (nest_level > 0) {
               nest_level = nest_level - 1;
           }
@@ -78,8 +164,13 @@ function formatNestedCall(str = '', f = 'readable') {
               buffer = buffer + " ";
           }
       }
-      else if (str.charAt(i) == " " || str.charAt(i) == "\n") {
-          
+      else if (str.charAt(i) == " ") {
+
+      }
+      else if (str.charAt(i) == "\n") {
+          if (nest_level == 0) {
+              buffer = buffer + str.charAt(i);
+          }
       }
       else {
           if (buffer != "") {
@@ -93,27 +184,17 @@ function formatNestedCall(str = '', f = 'readable') {
   }
 
   if (buffer != "") {
-      out_str = out_str + buffer;
+      var regex = /\n/g;
+      var tmp_buffer = buffer.replace(regex, '');
+
+      // omit append multiple carriage returns at the end of text field
+      if (tmp_buffer != "") {
+          out_str = out_str + buffer;
+      }
   }
-  out_str = out_str + "\n";
+  if (out_str.charAt(out_str.length - 1) != "\n") {
+      out_str = out_str + "\n";
+  }
 
   return out_str;
 }
-
-$(function ()
-{
-    $(document).on("keydown", "#my_input", function(e)
-    {
-        if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey)
-        {
-            if (lastFormat == 'readable') {
-                lastFormat = 'grafana';
-            }
-            else {
-                lastFormat = 'readable';
-            }
-
-            doFormat(lastFormat);
-        }
-    });
-});
