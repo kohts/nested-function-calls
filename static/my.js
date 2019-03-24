@@ -1,17 +1,20 @@
 var lastFormat = 'readable';
 
 function doReplace(aText, aReplaceWhat, aReplaceWith) {
-    var prev_text = '';
-    var new_text = aText;
-    var numReplacements = 0;
+    // Nothing should prevent you from just escaping every non-alphanumeric character:
+    var replaceWhatEscaped = aReplaceWhat.replace(/(?=\W)/g, '\\');
+    //
+    // You lose a certain degree of readability when doing re.toString()
+    // but you win a great deal of simplicity (and security).
+    //
+    // According to ECMA-262, on the one hand, regular expression "syntax characters"
+    // are always non-alphanumeric, such that the result is secure, and
+    // special escape sequences (\d, \w, \n) are always alphanumeric such that
+    // no false control escapes will be produced.
 
-    while (prev_text != new_text && numReplacements < 1000) {
-        prev_text = new_text;
-        new_text = new_text.replace(aReplaceWhat, aReplaceWith);
-        numReplacements = numReplacements + 1;
-    }
+    var replaceWhatRegex = new RegExp(replaceWhatEscaped, 'g');
 
-    return new_text;
+    return aText.replace(replaceWhatRegex, aReplaceWith);
 }
 
 function myOnLoad() {
