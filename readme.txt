@@ -20,4 +20,4 @@ running test [6]: OK.
 petr@ashes:~/python-docs-samples/appengine/standard_python37/hello_world/static$
 
 deploying to appspot:
-   
+   gcloud app deploy app.yaml --project nested-function-calls
