@@ -173,11 +173,19 @@ function formatNestedCall(str = '', targetFormat = 'readable', cursorPosition = 
             buffer = buffer + str.charAt(i);
             continue;
         }
-      
+
+        var outputCurrentChar = function() {
+            if (buffer != "") {
+                out_str = out_str + buffer + str.charAt(i);
+                buffer = "";
+            }
+            else {
+                out_str = out_str + str.charAt(i);
+            }
+        };
       
         if (str.charAt(i) == "(" || str.charAt(i) == "{") {
-            out_str = out_str + str.charAt(i);
-
+            outputCurrentChar();
             nest_level = nest_level + 1;
 
             if (targetFormat == 'readable') {
@@ -195,6 +203,7 @@ function formatNestedCall(str = '', targetFormat = 'readable', cursorPosition = 
             buffer = buffer + str.charAt(i);
         }
         else if (str.charAt(i) == ",") {
+//            alert("targetFormat:" + targetFormat + ", nest_level:" + nest_level + ", out_str:" + out_str);
             buffer = buffer + str.charAt(i);
           
             if (targetFormat == 'readable') {
@@ -213,13 +222,7 @@ function formatNestedCall(str = '', targetFormat = 'readable', cursorPosition = 
             }
         }
         else {
-            if (buffer != "") {
-                out_str = out_str + buffer + str.charAt(i);
-                buffer = "";
-            }
-            else {
-                out_str = out_str + str.charAt(i);
-            }
+            outputCurrentChar();
         }
     }
 
