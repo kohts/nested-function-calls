@@ -30,7 +30,7 @@ def hello():
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-<script src="/static/my.js"></script>
+<script src="/static/my.js?1"></script>
 </head>
 <body onload="myOnLoad();">
 <textarea id="my_input">
